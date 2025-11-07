@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@classes/*": ["classes/*"],
+      "@commands/*": ["commands/*"],
+      "@config/*": ["config/*"],
+      "@core/*": ["core/*"],
+      "@logs/*": ["logs/*"],
+      "@managers/*": ["managers/*"],
+      "@models/*": ["models/*"]
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": ["ES2020", "DOM"]
+  },
+  "include": ["src"]
+}
+
