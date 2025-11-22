@@ -1,6 +1,7 @@
 import { Schema, model, Document, Types } from "mongoose";
 
 export interface ISound {
+  id: string,
   name: string;
   from: "youtube";
   url: string;
@@ -17,7 +18,7 @@ const SoundSchema = new Schema<ISound>({
   author: { type: String, required: true },
   iconUrl: { type: String, required: true },
   seconds: { type: Number, required: true },
-  listenedTimes: { type: Number, default: 0 }
+  listenedTimes: { type: Number, default: 0 },
 });
 
 export const Sound = model<ISound>("Sound", SoundSchema);

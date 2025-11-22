@@ -4,5 +4,6 @@ export const EmojieData = {
   hourglass: ":hourglass:1433151901477896214",
   shizik_coin: ":shkizikcoin:1433353684812693587",
   diamond2: ":diamond2:1435837259428659323",
-  diamond1: ":diamond1:1435837249819508826"
+  diamond1: ":diamond1:1435837249819508826",
+  like: ":like:1437961587846807642",
 }//<:${emoji}>

@@ -20,11 +20,9 @@ class BalanceService {
 
   async addBalance(user: User, count: number) {
     const botUser = await getBotUser(user);
-
+    console.log(user.globalName, count)
     botUser.coins += count;
     await botUser.save();
-
-    console.log(`User ${user.displayName} got ${count} coins, he has ${botUser.coins}`);
   }
 
   getUser(user: User): ShizUser {

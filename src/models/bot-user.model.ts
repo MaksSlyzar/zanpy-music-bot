@@ -5,7 +5,8 @@ export interface IBotUser extends Document {
   discordId: string,
   coins: number,
   nickname: string,
-  historySounds: ISound[]
+  historySounds: ISound[],
+  favorite: ISound[]
 };
 
 const BotUserSchema = new Schema<IBotUser>({
@@ -13,6 +14,7 @@ const BotUserSchema = new Schema<IBotUser>({
   coins: { type: Number, default: 0 },
   nickname: { type: String, required: true },
   historySounds: [{ type: Schema.Types.ObjectId, ref: "Sound" }],
+  favorite: [{ type: Schema.Types.ObjectId, ref: "Sound" }]
 });
 
 export const BotUser = model<IBotUser>("BotUser", BotUserSchema);

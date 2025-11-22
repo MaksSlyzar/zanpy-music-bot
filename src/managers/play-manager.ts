@@ -1,4 +1,4 @@
-import { ButtonInteraction, ChatInputCommandInteraction, TextChannel } from "discord.js";
+import { ButtonInteraction, ChatInputCommandInteraction, Interaction, ModalSubmitInteraction, TextChannel } from "discord.js";
 import PlayService from "./play-service";
 import { getBotUser } from "@core/get-bot-user";
 
@@ -30,72 +30,84 @@ class PlayManager {
     // await playlist.save();
   }
 
-  public async play(interaction: ChatInputCommandInteraction, payload: string) {
+  private getServiceByInteraction(interaction: ChatInputCommandInteraction | ButtonInteraction) {
     const guild = interaction.guild;
     const channel = interaction.channel;
 
-    if (!guild || !channel) return;
+    if (!guild || !channel) return null;
 
-    if (!this.services[guild.id]) this.services[guild.id] = new PlayService(channel as TextChannel, guild);
+    let service = this.services[guild.id];
 
-    const service = this.services[guild.id];
+    if (!service) {
+      service = new PlayService(guild, channel as TextChannel);
+      this.services[guild.id] = service;
+    }
+    return service;
+  }
 
-    const status = await service.start(interaction);
+  public async play(interaction: ChatInputCommandInteraction, payload: string) {
+    const service = this.getServiceByInteraction(interaction);
+    if (!service) interaction.editReply("Failed, wrong text channel");
 
-    if (status)
-      service.play(interaction, payload);
-
-    //TODO: catch errors
+    service?.play(interaction, payload);
   }
 
   public async playLatest(interaction: ChatInputCommandInteraction) {
-    const botUser = await getBotUser(interaction.user);
-    const guild = interaction.guild;
-    const channel = interaction.channel;
-
-    if (!guild || !channel) return;
-
-    const limitedUser = await botUser.populate({
-      path: "historySounds",
-      options: { sort: { _id: -1 }, limit: 10 }
-    });
-
-    if (!this.services[guild.id]) this.services[guild.id] = new PlayService(channel as TextChannel, guild);
-
-    const service = this.services[guild.id];
-
-    const status = await service.start(interaction);
-
-    if (status)
-      service.addSoundsFromDB(limitedUser.historySounds, interaction.user);
+    // const botUser = await getBotUser(interaction.user);
+    // const guild = interaction.guild;
+    // const channel = interaction.channel;
+    //
+    // if (!guild || !channel) return;
+    //
+    // const limitedUser = await botUser.populate({
+    //   path: "historySounds",
+    //   options: { sort: { _id: -1 }, limit: 10 }
+    // });
+    //
+    // if (!this.services[guild.id]) this.services[guild.id] = new PlayService(channel as TextChannel, guild);
+    //
+    // const service = this.services[guild.id];
+    //
+    // const status = await service.start(interaction);
+    //
+    // if (status)
+    //   service.addSoundsFromDB(limitedUser.historySounds, interaction.user);
   }
 
   public skip(interaction: ChatInputCommandInteraction) {
-    if (interaction.guildId === null) return;
-    const service = this.services[interaction.guildId];
-    if (service)
-      service.skip();
-
-    interaction.reply("Пропускаю трек, це повідомлення зникне через 5 секунд.").then(i => {
-      setTimeout(() => i.delete(), 5000);
-    });
+    // if (interaction.guildId === null) return;
+    // const service = this.services[interaction.guildId];
+    // if (service)
+    //   service.skip();
+    //
+    // interaction.reply("Пропускаю трек, це повідомлення зникне через 5 секунд.").then(i => {
+    //   setTimeout(() => i.delete(), 5000);
+    // });
   }
 
   public skipAll(interaction: ChatInputCommandInteraction) {
-    if (interaction.guildId === null) return;
-    const service = this.services[interaction.guildId];
-    if (service)
-      service.skipAll();
+    // if (interaction.guildId === null) return;
+    // const service = this.services[interaction.guildId];
+    // if (service)
+    //   service.skipAll();
+    //
+    // interaction.reply("Пропускаю трек, це повідомлення зникне через 5 секунд.").then(i => {
+    //   setTimeout(() => i.delete(), 5000);
+    // });
+  }
 
-    interaction.reply("Пропускаю трек, це повідомлення зникне через 5 секунд.").then(i => {
-      setTimeout(() => i.delete(), 5000);
-    });
+  public modalController(interaction: ModalSubmitInteraction) {
+    // const guildId = interaction.guildId;
+    // if (!guildId) return;
+    // const service = this.services[guildId];
+    // service.modalSubmit(interaction);
   }
 
   async buttonController(interaction: ButtonInteraction) {
-    if (!interaction.guildId) return;
-
-    const service = this.services[interaction.guildId];
+    const guildId = interaction.guildId;
+    if (!guildId) return interaction.reply("Undefined guild");
+    const service = this.services[guildId];
+    if (!service) return interaction.reply("Use /play");
     service.buttonClick(interaction);
   }
 }
